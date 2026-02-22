@@ -247,6 +247,75 @@ button {
   margin-top: var(--spacing-md);
 }
 
+/* Behavior Input Grid */
+.behavior-inputs-container {
+  margin-top: var(--spacing-lg);
+  border-top: 2px solid var(--border-color);
+  padding-top: var(--spacing-md);
+}
+
+.behavior-grid-inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-sm) var(--spacing-lg);
+}
+
+.behavior-input-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.behavior-input-group label {
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.behavior-input-group select {
+  width: 70px; /* Keeps the dropdown small */
+  padding: 5px;
+}
+
+/* ==========================================================
+   TAB 1: CALCULATOR SPREADSHEET GRID
+   ========================================================== */
+.calc-grid-header {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1.5fr 1.5fr 40px;
+  gap: 5px;
+  font-weight: bold;
+  font-size: 13px;
+  margin-bottom: 5px;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.student-row {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1.5fr 1.5fr 40px;
+  gap: 5px;
+  margin-bottom: var(--spacing-sm);
+}
+
+.student-row input {
+  padding: 8px 5px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.student-row .calc-name {
+  text-align: left;
+}
+
+/* Make the total box look "locked" and read-only */
+.calc-total {
+  background-color: #e0e0e0 !important;
+  font-weight: bold;
+  color: var(--color-primary);
+  border-color: #999;
+}
+
 /* ==========================================================
    MOBILE RESPONSIVENESS (For Staff without Laptops)
    ========================================================== */

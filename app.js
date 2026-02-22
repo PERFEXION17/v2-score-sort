@@ -61,7 +61,7 @@ loginBtn.addEventListener("click", () => {
     dashboardScreen.classList.remove("hidden");
     initReportTab();
     loadCalculatorData();
-    loadStickyBioData();
+    loadStickyBioData(); // Initialize the sticky fields
   } else {
     alert("Invalid Access Code");
   }
@@ -73,10 +73,15 @@ logoutBtn.addEventListener("click", () => {
       "Are you sure you want to log out? Any unsaved report card data will be lost.",
     )
   ) {
+    // Swap screens back
     dashboardScreen.classList.add("hidden");
     loginScreen.classList.remove("hidden");
+
+    // Clear auth inputs
     document.getElementById("teacher-pin").value = "";
     document.getElementById("school-id").value = "";
+
+    // Reset dashboard view
     tabCalc.classList.remove("hidden");
     tabReport.classList.add("hidden");
     tabBtnCalc.classList.add("active");
@@ -99,31 +104,50 @@ tabBtnReport.addEventListener("click", () => {
 });
 
 // --- TAB 1: SUBJECT CALCULATOR ---
-const studentInputsContainer = document.getElementById(
-  "student-inputs-container",
-);
+const studentInputsContainer = document.getElementById("student-inputs-container");
 
 document.getElementById("add-student-row").addEventListener("click", () => {
   addStudentRow();
 });
 
-function addStudentRow(name = "", score = "") {
+// Updated to handle the full breakdown and auto-sum
+function addStudentRow(data = {}) {
   const row = document.createElement("div");
   row.className = "student-row";
+  
+  // Inject the 7 inputs
   row.innerHTML = `
-        <input type="text" class="calc-name" placeholder="Student Name" value="${name}">
-        <input type="number" class="calc-score" placeholder="Score (1-100)" value="${score}" min="1" max="100">
+        <input type="text" class="calc-name" placeholder="Name" value="${data.name || ''}">
+        <input type="number" class="calc-a1" placeholder="5" value="${data.a1 || ''}" max="5">
+        <input type="number" class="calc-a2" placeholder="5" value="${data.a2 || ''}" max="5">
+        <input type="number" class="calc-t1" placeholder="10" value="${data.t1 || ''}" max="10">
+        <input type="number" class="calc-t2" placeholder="10" value="${data.t2 || ''}" max="10">
+        <input type="number" class="calc-ex" placeholder="70" value="${data.ex || ''}" max="70">
+        <input type="number" class="calc-total" placeholder="100" value="${data.score || ''}" readonly tabindex="-1">
         <button class="danger-btn remove-row">X</button>
     `;
-  row
-    .querySelector(".remove-row")
-    .addEventListener("click", () => row.remove());
+
+  // The Auto-Summing Logic
+  const inputs = row.querySelectorAll('input[type="number"]:not(.calc-total)');
+  const totalBox = row.querySelector('.calc-total');
+
+  inputs.forEach(input => {
+    input.addEventListener('input', () => {
+      let sum = 0;
+      inputs.forEach(inp => {
+        sum += parseFloat(inp.value) || 0;
+      });
+      totalBox.value = sum > 0 ? sum : ''; // Only show total if > 0
+    });
+  });
+
+  row.querySelector(".remove-row").addEventListener("click", () => row.remove());
   studentInputsContainer.appendChild(row);
 }
 
+// Ordinal Suffix Helper (Keep this from your original code)
 function getOrdinalSuffix(n) {
-  const j = n % 10,
-    k = n % 100;
+  const j = n % 10, k = n % 100;
   if (j == 1 && k != 11) return n + "st";
   if (j == 2 && k != 12) return n + "nd";
   if (j == 3 && k != 13) return n + "rd";
@@ -139,10 +163,18 @@ document.getElementById("calculate-rankings").addEventListener("click", () => {
   rows.forEach((row) => {
     const rawName = row.querySelector(".calc-name").value;
     const name = formatName(rawName);
-    const score = parseFloat(row.querySelector(".calc-score").value);
+    
+    // Scrape all the individual values
+    const a1 = parseFloat(row.querySelector(".calc-a1").value) || "";
+    const a2 = parseFloat(row.querySelector(".calc-a2").value) || "";
+    const t1 = parseFloat(row.querySelector(".calc-t1").value) || "";
+    const t2 = parseFloat(row.querySelector(".calc-t2").value) || "";
+    const ex = parseFloat(row.querySelector(".calc-ex").value) || "";
+    const score = parseFloat(row.querySelector(".calc-total").value) || 0;
 
-    if (name && !isNaN(score)) {
-      students.push({ name, score });
+    if (name && score > 0) {
+      // Save the entire breakdown into the array
+      students.push({ name, a1, a2, t1, t2, ex, score });
       totalScore += score;
     }
   });
@@ -163,17 +195,17 @@ document.getElementById("calculate-rankings").addEventListener("click", () => {
 
   const classAverage = (totalScore / students.length).toFixed(1);
 
+  // Save the new complex data to LocalStorage
   const dataToSave = { subjectName, classAverage, students };
   localStorage.setItem("scoreSort_SubjectData", JSON.stringify(dataToSave));
 
   renderRankings(dataToSave);
 });
 
+// Render rankings stays exactly the same
 function renderRankings(data) {
-  document.getElementById("display-subject-name").innerText =
-    data.subjectName || "N/A";
-  document.getElementById("display-class-average").innerText =
-    data.classAverage;
+  document.getElementById("display-subject-name").innerText = data.subjectName || "N/A";
+  document.getElementById("display-class-average").innerText = data.classAverage;
   const tbody = document.getElementById("ranking-table-body");
   tbody.innerHTML = "";
   data.students.forEach((s) => {
@@ -182,12 +214,13 @@ function renderRankings(data) {
   document.getElementById("calculator-results").classList.remove("hidden");
 }
 
+// Load now passes the whole object to addStudentRow
 function loadCalculatorData() {
   const saved = localStorage.getItem("scoreSort_SubjectData");
   if (saved) {
     const data = JSON.parse(saved);
     document.getElementById("subject-name").value = data.subjectName || "";
-    data.students.forEach((s) => addStudentRow(s.name, s.score));
+    data.students.forEach((s) => addStudentRow(s)); // Pass the whole object!
     renderRankings(data);
   } else {
     addStudentRow();
@@ -206,20 +239,41 @@ document.getElementById("clear-subject-data").addEventListener("click", () => {
 
 // --- TAB 2: REPORT GENERATOR ---
 function initReportTab() {
+  // Prevent duplicating the table rows if the user logs out and logs back in
   const tbody = document.getElementById("subjects-input-body");
   if (tbody.children.length === 0) {
     SUBJECTS.forEach((sub) => {
       tbody.innerHTML += `
-        <tr class="report-subject-row" data-subject="${sub}">
-            <td>${sub}</td>
-            <td><input type="number" class="ass1 report-input-cell" max="5"></td>
-            <td><input type="number" class="ass2 report-input-cell" max="5"></td>
-            <td><input type="number" class="test1 report-input-cell" max="10"></td>
-            <td><input type="number" class="test2 report-input-cell" max="10"></td>
-            <td><input type="number" class="exam report-input-cell" max="70"></td>
-            <td><input type="number" class="class-avg report-input-cell"></td>
-            <td><input type="text" class="subj-pos report-input-cell"></td>
-        </tr>
+                <tr class="report-subject-row" data-subject="${sub}">
+                    <td>${sub}</td>
+                    <td><input type="number" class="ass1 report-input-cell" max="5"></td>
+                    <td><input type="number" class="ass2 report-input-cell" max="5"></td>
+                    <td><input type="number" class="test1 report-input-cell" max="10"></td>
+                    <td><input type="number" class="test2 report-input-cell" max="10"></td>
+                    <td><input type="number" class="exam report-input-cell" max="70"></td>
+                    <td><input type="number" class="class-avg report-input-cell"></td>
+                    <td><input type="text" class="subj-pos report-input-cell"></td>
+                </tr>
+            `;
+    });
+  }
+
+  // Inject Behavior Dropdowns into the Dashboard
+  const behaviorInputContainer = document.getElementById("behavior-inputs");
+  if (behaviorInputContainer && behaviorInputContainer.children.length === 0) {
+    BEHAVIORS.forEach((b, index) => {
+      behaviorInputContainer.innerHTML += `
+        <div class="behavior-input-group">
+            <label>${b}</label>
+            <select id="beh-${index}">
+                <option value=""></option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+            </select>
+        </div>
       `;
     });
   }
@@ -238,6 +292,7 @@ function getGradeAndRemark(total) {
 }
 
 document.getElementById("generate-report-btn").addEventListener("click", () => {
+  // Validation Check
   const rawStudentName = document.getElementById("bio-name").value.trim();
   if (!rawStudentName) {
     alert("Please enter a Student Name before generating the report card.");
@@ -254,6 +309,7 @@ document.getElementById("generate-report-btn").addEventListener("click", () => {
     "class",
     "no-in-class",
     "position",
+    "fees-paid",
     "fees-owed",
     "term-ending",
     "next-term",
@@ -262,7 +318,7 @@ document.getElementById("generate-report-btn").addEventListener("click", () => {
 
   bioIds.forEach((id) => {
     const el = document.getElementById(`bio-${id}`);
-    if (!el) return;
+    if (!el) return; // safeguard if an input is missing in HTML
 
     let val = el.value;
     if (id === "name") {
@@ -299,14 +355,14 @@ document.getElementById("generate-report-btn").addEventListener("click", () => {
       const { grade, remark } = getGradeAndRemark(totalScore);
 
       outTbody.innerHTML += `
-        <tr>
-            <td>${subject}</td>
-            <td>${a1 || "-"}</td><td>${a2 || "-"}</td><td>${t1 || "-"}</td><td>${t2 || "-"}</td><td>${exam || "-"}</td>
-            <td><strong>${totalScore}</strong></td>
-            <td>${classAvg}</td><td>${subjPos}</td>
-            <td><strong>${grade}</strong></td><td>${remark}</td>
-        </tr>
-      `;
+                <tr>
+                    <td>${subject}</td>
+                    <td>${a1 || "-"}</td><td>${a2 || "-"}</td><td>${t1 || "-"}</td><td>${t2 || "-"}</td><td>${exam || "-"}</td>
+                    <td><strong>${totalScore}</strong></td>
+                    <td>${classAvg}</td><td>${subjPos}</td>
+                    <td><strong>${grade}</strong></td><td>${remark}</td>
+                </tr>
+            `;
     }
   });
 
@@ -314,18 +370,34 @@ document.getElementById("generate-report-btn").addEventListener("click", () => {
   document.getElementById("out-overall-avg").innerText =
     subjectCount > 0 ? (grandTotal / subjectCount).toFixed(1) : 0;
 
-  // Populate Blank Behavior Rows for Hand-Grading
+  // Populate Behavior Table with Checkmarks (✓)
   const behaviorBody = document.getElementById("behavior-body");
   behaviorBody.innerHTML = "";
-  BEHAVIORS.forEach((param) => {
-    behaviorBody.innerHTML += `<tr><td>${param}</td><td></td><td></td><td></td><td></td><td></td></tr>`;
+
+  BEHAVIORS.forEach((param, index) => {
+    // Read the dropdown value from the dashboard
+    const behSelect = document.getElementById(`beh-${index}`);
+    const val = behSelect ? behSelect.value : "";
+
+    // Inject a checkmark into the correct column
+    behaviorBody.innerHTML += `
+      <tr>
+        <td>${param}</td>
+        <td>${val === "A" ? "✓" : ""}</td>
+        <td>${val === "B" ? "✓" : ""}</td>
+        <td>${val === "C" ? "✓" : ""}</td>
+        <td>${val === "D" ? "✓" : ""}</td>
+        <td>${val === "E" ? "✓" : ""}</td>
+      </tr>
+    `;
   });
 
+  // Switch Screens
   dashboardScreen.classList.add("hidden");
   reportCardScreen.classList.remove("hidden");
 });
 
-// --- STICKY DATA & CLEAR LOGIC ---
+// --- TAB 2: STICKY DATA & CLEAR LOGIC ---
 const stickyFields = [
   "bio-term",
   "bio-class",
@@ -333,6 +405,7 @@ const stickyFields = [
   "bio-next-term",
 ];
 
+// Auto-save sticky fields to localStorage
 stickyFields.forEach((id) => {
   const el = document.getElementById(id);
   if (el) {
@@ -367,6 +440,7 @@ if (clearReportBtn) {
         "Clear this student's data and grades? Your sticky Term and Class fields will be kept.",
       )
     ) {
+      // Clear unique bio-data
       const uniqueBioIds = [
         "bio-name",
         "bio-sex",
@@ -382,8 +456,15 @@ if (clearReportBtn) {
         if (el) el.value = "";
       });
 
+      // Clear grades
       document.querySelectorAll(".report-input-cell").forEach((input) => {
         input.value = "";
+      });
+
+      // Clear Behavior Dropdowns
+      BEHAVIORS.forEach((b, index) => {
+        const behSelect = document.getElementById(`beh-${index}`);
+        if (behSelect) behSelect.value = "";
       });
     }
   });

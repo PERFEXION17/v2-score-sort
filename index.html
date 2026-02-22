@@ -44,6 +44,17 @@
             placeholder="Subject Name (e.g., Mathematics)"
           />
         </div>
+        <div class="calc-grid-header">
+            <div style="text-align: left;">Student Name</div>
+            <div>A1 (5)</div>
+            <div>A2 (5)</div>
+            <div>T1 (10)</div>
+            <div>T2 (10)</div>
+            <div>EXAM (70)</div>
+            <div>TOTAL</div>
+            <div></div>
+        </div>
+        
         <div id="student-inputs-container"></div>
         <button id="add-student-row" class="secondary-btn">
           + Add Student Row
@@ -87,6 +98,7 @@
           <input type="text" id="bio-class" placeholder="CLASS" />
           <input type="number" id="bio-no-in-class" placeholder="NO IN CLASS" />
           <input type="text" id="bio-position" placeholder="POSITION" />
+          <input type="number" id="bio-fees-paid" placeholder="FEES PAID (₦)" />
           <input type="number" id="bio-fees-owed" placeholder="FEES OWED (₦)" />
           <input type="date" id="bio-term-ending" title="TERM ENDING" />
           <input type="date" id="bio-next-term" title="NEXT TERM BEGINS" />
@@ -110,6 +122,12 @@
             <tbody id="subjects-input-body"></tbody>
           </table>
         </div>
+
+        <div class="behavior-inputs-container">
+          <h3>Behavior & Activities Ratings</h3>
+          <div class="behavior-grid-inputs" id="behavior-inputs"></div>
+        </div>
+
         <div class="action-buttons">
           <button id="generate-report-btn" class="primary-btn">
             Generate Report Card
@@ -132,7 +150,7 @@
       <div class="printable-report">
         <header class="report-header">
           <div class="school-details">
-            <h1>JESUS TOWER INTERNATIONAL SCHOOL, DIYE ZARMAGANDA JOS</h1>
+            <h1>ABCD HIGH SCHOOL, JOS</h1>
             <h3>SENIOR SECONDARY SCHOOL</h3>
             <h2>TERMLY REPORT</h2>
           </div>
@@ -147,7 +165,7 @@
           <div>CLASS: <span id="out-class"></span></div>
           <div>NO IN CLASS: <span id="out-no-in-class"></span></div>
           <div>POSITION: <span id="out-position"></span></div>
-          <div>FEES PAID: _________</div>
+          <div>FEES PAID: ₦<span id="out-fees-paid"></span></div>
           <div>FEES OWED: ₦<span id="out-fees-owed"></span></div>
           <div>TERM ENDING: <span id="out-term-ending"></span></div>
           <div>NEXT TERM BEGINS: <span id="out-next-term"></span></div>
@@ -254,7 +272,15 @@
 
         <div class="remarks-section">
           <p>
-            FROM MASTER REMARK:
+            FORM MASTER REMARK:
+            _________________________________________________
+          </p>
+          <p>
+            SIGNATURE: _______________________ DATE: __________________________
+          </p>
+          <br>
+          <p>
+            HOUSE MASTER REMARK:
             _________________________________________________
           </p>
           <p>
