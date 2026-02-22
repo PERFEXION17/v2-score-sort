@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Score Sort - Digital Report Card</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="login-screen" class="screen-container">
+      <div class="login-box">
+        <h2>Score Sort Access</h2>
+        <div class="input-group">
+          <label>SCHOOL ID</label>
+          <input type="text" id="school-id" placeholder="Enter School ID" />
+        </div>
+        <div class="input-group">
+          <label>TEACHER PIN</label>
+          <input type="password" id="teacher-pin" placeholder="Enter PIN" />
+        </div>
+        <button id="login-btn" class="primary-btn">Login</button>
+      </div>
+    </div>
+
+    <div id="dashboard-screen" class="screen-container hidden no-print">
+      <header class="dashboard-header">
+        <h1>Teacher Dashboard</h1>
+        <div class="tabs">
+          <button id="tab-btn-calculator" class="tab-btn active">
+            Subject Calculator
+          </button>
+          <button id="tab-btn-report" class="tab-btn">Report Generator</button>
+        </div>
+        <button id="logout-btn" class="danger-btn">Log Out</button>
+      </header>
+
+      <div id="tab-calculator" class="tab-content active">
+        <h2>Subject Calculator</h2>
+        <div class="controls">
+          <input
+            type="text"
+            id="subject-name"
+            placeholder="Subject Name (e.g., Mathematics)"
+          />
+          <button id="add-student-row" class="secondary-btn">
+            + Add Student Row
+          </button>
+        </div>
+        <div id="student-inputs-container"></div>
+        <div class="action-buttons">
+          <button id="calculate-rankings" class="primary-btn">
+            Calculate Rankings
+          </button>
+          <button id="clear-subject-data" class="danger-btn">
+            Clear Subject Data
+          </button>
+        </div>
+        <div id="calculator-results" class="hidden">
+          <h3>Results: <span id="display-subject-name"></span></h3>
+          <p>Class Average: <strong id="display-class-average">0</strong></p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Student Name</th>
+                <th>Score</th>
+                <th>Position</th>
+              </tr>
+            </thead>
+            <tbody id="ranking-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="tab-report" class="tab-content hidden">
+        <h2>Student Report Generator</h2>
+        <div class="bio-data-grid">
+          <input type="text" id="bio-name" placeholder="NAME OF PUPIL" />
+          <select id="bio-sex">
+            <option value="">SEX</option>
+            <option value="M">M</option>
+            <option value="F">F</option>
+          </select>
+          <input type="text" id="bio-term" placeholder="TERM" />
+          <input type="text" id="bio-state" placeholder="STATE OF ORIGIN" />
+          <input type="text" id="bio-lga" placeholder="L.G.A" />
+          <input type="text" id="bio-class" placeholder="CLASS" />
+          <input type="number" id="bio-no-in-class" placeholder="NO IN CLASS" />
+          <input type="text" id="bio-position" placeholder="POSITION" />
+          <input type="number" id="bio-fees-owed" placeholder="FEES OWED (₦)" />
+          <input type="date" id="bio-term-ending" title="TERM ENDING" />
+          <input type="date" id="bio-next-term" title="NEXT TERM BEGINS" />
+          <input type="number" id="bio-absent" placeholder="ABSENT" />
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>SUBJECT</th>
+                <th>ASS 1 (5)</th>
+                <th>ASS 2 (5)</th>
+                <th>TEST 1 (10)</th>
+                <th>TEST 2 (10)</th>
+                <th>EXAMS (70)</th>
+                <th>CLASS AVG</th>
+                <th>SUBJ POS</th>
+              </tr>
+            </thead>
+            <tbody id="subjects-input-body"></tbody>
+          </table>
+        </div>
+        <div class="action-buttons">
+          <button id="generate-report-btn" class="primary-btn">
+            Generate Report Card
+          </button>
+          <button id="clear-report-btn" class="secondary-btn">
+            Clear Form (Keep Sticky Data)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="report-card-screen" class="screen-container hidden">
+      <div class="print-controls no-print">
+        <button id="back-to-dashboard" class="secondary-btn">
+          ← Back to Dashboard
+        </button>
+        <button id="print-report" class="primary-btn">Print Report</button>
+      </div>
+
+      <div class="printable-report">
+        <header class="report-header">
+          <div class="school-details">
+            <h1>JESUS TOWER INTERNATIONAL SCHOOL, DIYE ZARMAGANDA JOS</h1>
+            <h3>SENIOR SECONDARY SCHOOL</h3>
+            <h2>TERMLY REPORT</h2>
+          </div>
+        </header>
+
+        <div class="report-bio-grid">
+          <div>NAME OF PUPIL: <span id="out-name"></span></div>
+          <div>SEX: <span id="out-sex"></span></div>
+          <div>TERM: <span id="out-term"></span></div>
+          <div>STATE OF ORIGIN: <span id="out-state"></span></div>
+          <div>L.G.A: <span id="out-lga"></span></div>
+          <div>CLASS: <span id="out-class"></span></div>
+          <div>NO IN CLASS: <span id="out-no-in-class"></span></div>
+          <div>POSITION: <span id="out-position"></span></div>
+          <div>FEES PAID: _________</div>
+          <div>FEES OWED: ₦<span id="out-fees-owed"></span></div>
+          <div>TERM ENDING: <span id="out-term-ending"></span></div>
+          <div>NEXT TERM BEGINS: <span id="out-next-term"></span></div>
+          <div>ABSENT: <span id="out-absent"></span></div>
+        </div>
+
+        <div class="academic-record-header">ACADEMIC RECORD</div>
+        <table class="report-grades-table">
+          <thead>
+            <tr>
+              <th rowspan="2">SUBJECTS</th>
+              <th colspan="2">Assignment tests</th>
+              <th rowspan="2">Test 10</th>
+              <th rowspan="2">Test 10</th>
+              <th rowspan="2">Exams 70</th>
+              <th rowspan="2">Total score</th>
+              <th rowspan="2">Class average</th>
+              <th rowspan="2">Position</th>
+              <th rowspan="2">Grade</th>
+              <th rowspan="2">Remark</th>
+            </tr>
+            <tr>
+              <th>5</th>
+              <th>5</th>
+            </tr>
+          </thead>
+          <tbody id="report-grades-body"></tbody>
+        </table>
+
+        <div class="footer-tables-container">
+          <div class="behavior-box">
+            <table>
+              <thead>
+                <tr>
+                  <th>BEHAVIOR AND ACTIVITIES</th>
+                  <th>A</th>
+                  <th>B</th>
+                  <th>C</th>
+                  <th>D</th>
+                  <th>E</th>
+                </tr>
+              </thead>
+              <tbody id="behavior-body"></tbody>
+            </table>
+          </div>
+
+          <div class="rating-keys-box">
+            <table>
+              <thead>
+                <tr>
+                  <th>KEYS TO</th>
+                  <th>RATING</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>75-100</td>
+                  <td>A1 EXCELLENT</td>
+                </tr>
+                <tr>
+                  <td>70-74</td>
+                  <td>B2 VERY GOOD</td>
+                </tr>
+                <tr>
+                  <td>65-69</td>
+                  <td>B3 GOOD</td>
+                </tr>
+                <tr>
+                  <td>60-64</td>
+                  <td>C4 CREDIT</td>
+                </tr>
+                <tr>
+                  <td>55-59</td>
+                  <td>C5 CREDIT</td>
+                </tr>
+                <tr>
+                  <td>50-54</td>
+                  <td>C6 CREDIT</td>
+                </tr>
+                <tr>
+                  <td>45-49</td>
+                  <td>D7 PASS</td>
+                </tr>
+                <tr>
+                  <td>40-44</td>
+                  <td>E8 PASS</td>
+                </tr>
+                <tr>
+                  <td>39-0</td>
+                  <td>F9 FAIL</td>
+                </tr>
+                <tr class="final-totals">
+                  <td>TOTAL</td>
+                  <td id="out-overall-total"></td>
+                </tr>
+                <tr class="final-totals">
+                  <td>CLASS AVERAGE</td>
+                  <td id="out-overall-avg"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="remarks-section">
+          <p>
+            FROM MASTER REMARK:
+            _________________________________________________
+          </p>
+          <p>
+            SIGNATURE: _______________________ DATE: __________________________
+          </p>
+          <br />
+          <p>
+            PRINCIPAL REMARK:
+            ___________________________________________________
+          </p>
+          <p>
+            SIGNATURE: _______________________ DATE: __________________________
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
