@@ -468,8 +468,8 @@ button {
 
   /* 3. Compress Academic Record Table */
   .academic-record-header {
-    font-size: 13px;
-    padding: 2px;
+    font-size: 15px;
+    padding: 4px;
     margin-bottom: 0;
   }
   .report-grades-table th,
