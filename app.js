@@ -55,13 +55,14 @@ function formatName(name) {
 
 // --- AUTHENTICATION & LOGOUT ---
 loginBtn.addEventListener("click", () => {
+  const uid = document.getElementById('school-id').value
   const pin = document.getElementById("teacher-pin").value;
-  if (pin === "ADMIN2026") {
+  if (pin === "Heaven" && uid === 'JTIHS') {
     loginScreen.classList.add("hidden");
     dashboardScreen.classList.remove("hidden");
     initReportTab();
     loadCalculatorData();
-    loadStickyBioData(); // Initialize the sticky fields
+    loadStickyBioData();
   } else {
     alert("Invalid Access Code");
   }
