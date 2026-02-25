@@ -484,7 +484,7 @@ button {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 0.5cm; /* Shrunk from 1cm to give maximum vertical space */
+    margin: 0.5cm 1cm; /* Shrunk from 1cm to give maximum vertical space */
   }
 
   body {
@@ -510,27 +510,31 @@ button {
 
   /* 1. Compress Headers */
   .school-details h1 {
-    font-size: 16px;
+    font-size: 18px;
     margin-bottom: 2px;
   }
+
   .school-details h3 {
     font-size: 13px;
     margin-bottom: 2px;
   }
+
   .school-details h2 {
     font-size: 14px;
-    margin-bottom: 5px;
+    margin-bottom: 20px;
   }
+
   .report-header {
     margin-bottom: 5px;
   }
 
   /* 2. Compress Bio Grid */
   .report-bio-grid {
-    margin-bottom: 8px;
+    margin-bottom: 20px;
     padding: 5px;
     gap: 5px 10px; /* Tighter spacing between bio items */
   }
+
   .report-bio-grid div {
     font-size: 11px;
   }
@@ -550,9 +554,10 @@ button {
 
   /* 4. Compress Footer Tables (Behavior & Keys) */
   .footer-tables-container {
-    margin-top: 8px;
+    margin-top: 20px;
     gap: 10px;
   }
+
   .behavior-box th,
   .behavior-box td,
   .rating-keys-box th,
@@ -563,7 +568,7 @@ button {
 
   /* 5. Compress Remarks Section */
   .remarks-section {
-    margin-top: 10px;
+    margin-top: 60px;
     font-size: 12px;
     line-height: 1.8;
   }
