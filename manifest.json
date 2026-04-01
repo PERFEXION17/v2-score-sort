@@ -1,0 +1,22 @@
+{
+  "name": "JTIHS Digital Report Card",
+  "short_name": "JTIHS Reports",
+  "description": "Offline Termly Report Card Generator for Jesus Tower International High School",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#eaecee",
+  "theme_color": "#556b2f",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

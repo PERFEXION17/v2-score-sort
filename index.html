@@ -3,16 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Score Sort - Digital Report Card</title>
+    <title>Score Sort | Digital Report Card</title>
     <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css"
+    />
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#556b2f" />
+
+    <!-- iOS Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   </head>
 
   <body>
     <div id="login-screen" class="screen-container">
       <div class="login-box">
-        <h2>Score Sort Access</h2>
+        <h2>
+          <span style="font-size: 2rem; font-weight: 700">SCORE SORT</span>
+          <br />
+          DIGITAL REPORT CARD
+        </h2>
         <div class="input-group">
-          <label>SCHOOL ID</label>
+          <label>ID</label>
           <input type="text" id="school-id" placeholder="Enter School ID" />
         </div>
         <div class="input-group">
@@ -25,6 +45,14 @@
 
     <div id="dashboard-screen" class="screen-container hidden no-print">
       <header class="dashboard-header">
+        <div id="install-banner" class="install-banner">
+          <p>
+            📱 Install Score Sort Digital Report Card for offline use on your
+            device?
+          </p>
+          <button id="install-btn" class="primary-btn">Install App</button>
+          <button id="dismiss-install" class="secondary-btn">Not Now</button>
+        </div>
         <h1>Teacher Dashboard</h1>
         <div class="tabs">
           <button id="tab-btn-calculator" class="tab-btn active">
@@ -35,6 +63,7 @@
         <button id="logout-btn" class="danger-btn">Log Out</button>
       </header>
 
+      <!-- ====================== CALCULATOR TAB ====================== -->
       <div id="tab-calculator" class="tab-content active">
         <h2>Subject Calculator</h2>
         <div class="controls">
@@ -44,17 +73,35 @@
             placeholder="Subject Name (e.g., Mathematics)"
           />
         </div>
-        <div class="calc-grid-header">
-            <div style="text-align: left;">Student Name</div>
-            <div>A1 (5)</div>
-            <div>A2 (5)</div>
-            <div>T1 (10)</div>
-            <div>T2 (10)</div>
-            <div>EXAM (70)</div>
-            <div>TOTAL</div>
-            <div></div>
+        <div
+          class="controls"
+          style="
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+          "
+        >
+          <label style="font-weight: 600; white-space: nowrap">Section</label>
+          <select
+            id="calc-section"
+            style="padding: 10px 14px; font-size: 15px; border-radius: 8px"
+          >
+            <option value="SSS">Senior Secondary (SSS)</option>
+            <option value="JSS">Junior Secondary (JSS)</option>
+          </select>
         </div>
-        
+        <div class="calc-grid-header">
+          <div style="text-align: left">Student Name</div>
+          <div>A1</div>
+          <div>A2</div>
+          <div>T1</div>
+          <div>T2</div>
+          <div>EXAM</div>
+          <div>TOTAL</div>
+          <div></div>
+        </div>
+
         <div id="student-inputs-container"></div>
         <button id="add-student-row" class="secondary-btn">
           + Add Student Row
@@ -63,7 +110,10 @@
           <button id="calculate-rankings" class="primary-btn">
             Calculate Rankings
           </button>
-          <button id="clear-subject-data" class="danger-btn">
+          <button id="export-subject-btn" class="secondary-btn">
+            Export Subject Sheet
+          </button>
+          <button id="clear-subject-data" class="danger-btn clear-subject">
             Clear Subject Data
           </button>
         </div>
@@ -83,6 +133,15 @@
         </div>
       </div>
 
+      <!-- ====================== REPORT GENERATOR TAB ====================== -->
+      <div style="margin: 16px 0">
+        <label style="font-weight: 600; margin-right: 10px">Section</label>
+        <select id="report-section" style="padding: 10px 14px; font-size: 15px">
+          <option value="SSS">Senior Secondary (SSS)</option>
+          <option value="JSS">Junior Secondary (JSS)</option>
+        </select>
+      </div>
+
       <div id="tab-report" class="tab-content hidden">
         <h2>Student Report Generator</h2>
         <div class="bio-data-grid">
@@ -95,7 +154,15 @@
           <input type="text" id="bio-term" placeholder="TERM" />
           <input type="text" id="bio-state" placeholder="STATE OF ORIGIN" />
           <input type="text" id="bio-lga" placeholder="L.G.A" />
-          <input type="text" id="bio-class" placeholder="CLASS" />
+          <select id="bio-class">
+            <option value="">CLASS</option>
+            <option value="JSS1">JSS1</option>
+            <option value="JSS2">JSS2</option>
+            <option value="JSS3">JSS3</option>
+            <option value="SSS1">SSS1</option>
+            <option value="SSS2">SSS2</option>
+            <option value="SSS3">SSS3</option>
+          </select>
           <input type="number" id="bio-no-in-class" placeholder="NO IN CLASS" />
           <input type="text" id="bio-position" placeholder="POSITION" />
           <input type="number" id="bio-fees-paid" placeholder="FEES PAID (₦)" />
@@ -105,16 +172,35 @@
           <input type="number" id="bio-absent" placeholder="ABSENT" />
         </div>
 
+        <!-- IMPORT SECTION -->
+        <div class="import-section">
+          <h3>Import Subject Sheets from Teachers</h3>
+          <p class="import-description">
+            Upload JSON files exported by subject teachers. Multiple files
+            supported.
+          </p>
+          <input
+            type="file"
+            id="import-subject-files"
+            multiple
+            accept=".json"
+          />
+          <button id="import-subject-btn" class="primary-btn">
+            Fill In Report Card
+          </button>
+          <div id="import-status" class="hidden"></div>
+        </div>
+
         <div class="table-responsive">
           <table class="data-table">
             <thead>
               <tr>
                 <th>SUBJECT</th>
-                <th>ASS 1 (5)</th>
-                <th>ASS 2 (5)</th>
-                <th>TEST 1 (10)</th>
-                <th>TEST 2 (10)</th>
-                <th>EXAMS (70)</th>
+                <th>ASS 1</th>
+                <th>ASS 2</th>
+                <th>TEST 1</th>
+                <th>TEST 2</th>
+                <th>EXAMS</th>
                 <th>CLASS AVG</th>
                 <th>SUBJ POS</th>
               </tr>
@@ -139,6 +225,7 @@
       </div>
     </div>
 
+    <!-- REPORT CARD SCREEN remains unchanged -->
     <div id="report-card-screen" class="screen-container hidden">
       <div class="print-controls no-print">
         <button id="back-to-dashboard" class="secondary-btn">
@@ -150,8 +237,12 @@
       <div class="printable-report">
         <header class="report-header">
           <div class="school-details">
+            <img width="50px" src="icons/icon-192.png" alt="school logo" />
             <h1>JESUS TOWER INTERNATIONAL HIGH SCHOOL</h1>
-            <h3>SENIOR SECONDARY SCHOOL</h3>
+            <p>
+              No.1 Dachom Street, by Borehole, Zaramaganda, Jos, Plateau State
+            </p>
+            <h3 id="class-title">SENIOR SECONDARY SCHOOL</h3>
             <h2>TERMLY REPORT</h2>
           </div>
         </header>
@@ -177,19 +268,20 @@
           <thead>
             <tr>
               <th rowspan="2">SUBJECTS</th>
-              <th colspan="2">Assignment tests</th>
-              <th rowspan="2">Test 10</th>
-              <th rowspan="2">Test 10</th>
-              <th rowspan="2">Exams 70</th>
-              <th rowspan="2">Total score</th>
-              <th rowspan="2">Class average</th>
+              <th colspan="2">Assignments</th>
+              <th colspan="2">Assessment Tests</th>
+              <th rowspan="2">Exams</th>
+              <th rowspan="2">Total Ccore</th>
+              <th rowspan="2">Class Average</th>
               <th rowspan="2">Position</th>
               <th rowspan="2">Grade</th>
               <th rowspan="2">Remark</th>
             </tr>
             <tr>
-              <th>5</th>
-              <th>5</th>
+              <th>1st</th>
+              <th>2nd</th>
+              <th>1st</th>
+              <th>2nd</th>
             </tr>
           </thead>
           <tbody id="report-grades-body"></tbody>
@@ -278,7 +370,7 @@
           <p>
             SIGNATURE: _______________________ DATE: __________________________
           </p>
-          <br>
+          <br />
           <p>
             HOUSE MASTER REMARK:
             _________________________________________________
